@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+require 'tellmeabout'
+if ARGV.empty?
+  puts "usage: tellmeabout [name of article]"
+  puts "example:  tellmeabout saturn"
+  puts "example:  tellmeabout margaret thatcher"
+  exit 1
+end
+
+Tellmeabout.read_article(ARGV.join('_'))
