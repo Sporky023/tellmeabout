@@ -29,7 +29,6 @@ class WikipediaReader
       say_to_file
       say_to_speakers
     end
-
   end
 
   def say_to_file
