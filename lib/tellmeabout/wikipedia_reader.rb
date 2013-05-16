@@ -1,54 +1,27 @@
-require_relative 'wikipedia_content_cleaner'
+require_relative 'wikipedia_scrubber'
 
 class WikipediaReader
-  OUTPUT_TYPE = ['only to file', 'only to speakers', 'to both'][1]
-
-  def initialize(article_name)
-    @article_name = article_name
-    @rate = 230
-    @outfile_path = "#{article_name}.aiff"
+  def self.verbalize(search_term)
+    new(WikipediaFetcher, Verbalizer).verbalize(search_term)
   end
 
-  def read
-    read_wikipedia_article
+  def initialize(fetcher, verbalizer)
+    @fetcher, @verbalizer = fetcher, verbalizer
   end
 
-  def read_wikipedia_article
-    cleaner = WikipediaContentCleaner.new(@article_name)
-    cleaner.load_from_wikipedia
-    cleaner.delete_silent_substrings
-
-    @cleaned_content = cleaner.content
-
-    case OUTPUT_TYPE
-    when 'only to file'
-      say_to_file
-    when 'only to speakers'
-      say_to_speakers
-    when 'to both'
-      say_to_file
-      say_to_speakers
-    end
+  def verbalize(search_term)
+    say(clean(fetch(search_term)))
   end
 
-  def say_to_file
-    total_command = "#{command(@cleaned_content)} -r #{@rate} -v #{voice} -o #{outfile_path}"
-    `#{total_command}`
+  def say(clean_content)
+    @verbalizer.say_to_speakers(clean_content)
   end
 
-  def say_to_speakers
-    `#{command(@cleaned_content)} -r #{@rate} -v #{voice}`
+  def clean(html_content)
+    WikipediaScrubber.scrub(html_content)
   end
 
-  def command(string)
-    "say \"#{string.gsub('"', '\"')}\""
-  end
-
-  def voice
-    'Vicki'
-  end
-
-  def outfile_path
-    "/Users/luke/Desktop/#{@article_name}.aiff"
+  def fetch(search_term)
+    @fetcher.fetch(search_term)
   end
 end
