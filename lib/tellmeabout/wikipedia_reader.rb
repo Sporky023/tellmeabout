@@ -1,3 +1,5 @@
+require_relative 'wikipedia_fetcher'
+require_relative 'verbalizer'
 require_relative 'wikipedia_scrubber'
 
 class WikipediaReader
