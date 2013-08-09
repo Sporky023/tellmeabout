@@ -4,9 +4,7 @@ class WikipediaScrubber
   CSS_SELECTORS_CONTAINING_READABLE_CONTENT = [
     'h1',
     'h2 > span:first-child',
-    '.content_block > p',
-    '#bodyContent #mw-content-text p',
-    '#bodyContent #siteSub'
+    '.content_block > p'
   ]
 
   def self.scrub(html_content)
@@ -22,7 +20,7 @@ class WikipediaScrubber
 
     compound_selector = CSS_SELECTORS_CONTAINING_READABLE_CONTENT.join(', ')
 
-    page.css(compound_selector).each do |element|
+    page.css(compound_selector).sort.each do |element|
       content_pieces.push element.content
     end
 
