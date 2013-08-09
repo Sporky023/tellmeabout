@@ -2,10 +2,11 @@ require 'nokogiri'
 
 class WikipediaScrubber
   CSS_SELECTORS_CONTAINING_READABLE_CONTENT = [
-    '#firstHeading',
+    'h1',
+    'h2 > span:first-child',
+    '.content_block > p',
     '#bodyContent #mw-content-text p',
-    '#bodyContent #siteSub',
-    'h2'
+    '#bodyContent #siteSub'
   ]
 
   def self.scrub(html_content)
@@ -25,10 +26,18 @@ class WikipediaScrubber
       content_pieces.push element.content
     end
 
-    content_pieces.join(' ')
+    waxed_content_pieces = content_pieces.map do |content_piece|
+      wax(content_piece)
+    end
+
+    waxed_content_pieces.join(' ')
   end
 
   private
+
+  def wax(content_piece)
+    content_piece.gsub(/\[\d+\]/, '')
+  end
 
   def page
     @page ||= Nokogiri::HTML(@html_content)
